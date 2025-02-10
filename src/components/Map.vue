@@ -37,8 +37,8 @@ const initMap = async () => {
     });
 
     window.gm_authFailure = () => {
-      console.warn('Google Maps authentication error - continuing without error reporting');
-    };
+  console.error('Google Maps authentication failed. Please check your API key.');
+};
 
   } catch (error) {
     console.error('Error initializing map:', error);
