@@ -3,12 +3,13 @@ import { ref, onMounted } from 'vue';
 import { Button } from '@/components/ui/button';
 import type { RadiusOptions } from '@/types/sighting';
 import { loadGoogleMaps } from '@/lib/google-maps';
-
+import { useTranslations } from '@/composables/useTranslations';
 const searchInput = ref<HTMLInputElement | null>(null);
 const selectedRadius = ref<RadiusOptions['radius']>(10);
 const radiusOptions: RadiusOptions['radius'][] = [5, 10, 25, 50];
 
 const emit = defineEmits(['radiusChanged']);
+const { t } = useTranslations();
 
 const searchByRadius = async () => {
   if (!searchInput.value?.value) return;
@@ -38,21 +39,21 @@ onMounted(async () => {
 
 <template>
   <div class="bg-white rounded-xl shadow-lg p-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Search Nearby Sightings</h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6"> {{ t('searchNearbySightings') }}</h2>
     <div class="flex flex-col md:flex-row gap-8 items-start md:items-end">
       <div class="w-full md:w-auto">
-        <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+        <label for="location" class="block text-sm font-medium text-gray-700 mb-2"> {{ t('location') }}</label>
         <input
           ref="searchInput"
           type="text"
           id="location"
           class="w-full md:w-64 px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200"
-          placeholder="Enter a location"
+          :placeholder="t('enterLocation')"
           autocomplete="off"
         />
       </div>
       <div class="w-full md:w-auto flex-grow">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Search Radius</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2"> {{ t('searchRadius') }}</label>
         <div class="flex flex-wrap gap-2">
           <Button
             v-for="radius in radiusOptions"
@@ -77,7 +78,7 @@ onMounted(async () => {
         :disabled="!searchInput?.value"
         @click="searchByRadius"
       >
-        Search Area
+        {{ t('searchArea') }}
       </Button>
     </div>
   </div>

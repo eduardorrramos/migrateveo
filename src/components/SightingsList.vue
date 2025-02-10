@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted , onUnmounted} from 'vue';
+import { ref, onMounted , onUnmounted } from 'vue';
 import { Button } from '@/components/ui/button';
 import { db} from '@/lib/firebase';
 import { collection, query, orderBy, onSnapshot, updateDoc, doc } from 'firebase/firestore';
 import type { Sighting } from '@/types/sighting';
+import { useTranslations } from '@/composables/useTranslations';
 
 const sightings = ref<Sighting[]>([]);
 const forceUpdate = ref(0);
+const { t } = useTranslations();
 
 const formatDate = (dateString: string | undefined): string => {
-  if (!dateString) return 'Never';
+  if (!dateString) return t('never');
   return new Date(dateString).toLocaleString();
 };
 const hasVotedOnSighting = (sightingId: string): boolean => {
@@ -139,7 +141,7 @@ onMounted(() => {
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Reported: {{ formatDate(sighting.timestamp) }}
+              {{ t('reported') }}: {{ formatDate(sighting.timestamp) }}
             </div>
             <div class="flex items-center gap-2">
               <span 
@@ -149,7 +151,7 @@ onMounted(() => {
                 {{ getStatusDisplay(sighting).text }}
               </span>
               <span class="text-sm text-gray-500">
-                Last confirmed: {{ formatDate(sighting.lastConfirmedAt) }}
+                {{ t('lastConfirmed') }}: {{ formatDate(sighting.lastConfirmedAt) }}
                 {{ sighting.lastConfirmedAt ? `(${getTimeAgo(sighting.lastConfirmedAt)})` : '' }}
               </span>
             </div>
@@ -162,7 +164,6 @@ onMounted(() => {
           <Button
     variant="outline"
     size="lg"
-    
     :class="`group border-2 border-green-600 text-green-700 hover:bg-green-600 hover:text-white transition-all duration-200 ${
           hasVotedOnSighting(sighting.id) ? 'cursor-not-allowed ' : ''
         }`"
@@ -171,7 +172,7 @@ onMounted(() => {
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
             </svg>
-            Still There ({{ sighting.confirmationCount }})
+            {{ t('stillThere') }} ({{ sighting.confirmationCount }})
           </Button>
           <Button
     variant="outline"
@@ -184,7 +185,7 @@ onMounted(() => {
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
             </svg>
-            Not There ({{ sighting.inactiveCount }})
+            {{ t('notThere') }} ({{ sighting.inactiveCount }})
           </Button>
         </div>
       </div>
