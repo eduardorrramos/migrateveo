@@ -112,7 +112,6 @@ const updateRadius = () => {
 };
 
 watch(() => props.sightings, updateMarkers, { deep: true });
-
 watch(() => props.selectedRadius, updateRadius, { deep: true });
 
 onMounted(async () => {

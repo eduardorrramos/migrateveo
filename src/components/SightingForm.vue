@@ -91,7 +91,7 @@ onMounted(async () => {
         }
       };
       const observer = new MutationObserver(() => {
-        const pacContainer = document.querySelector('.pac-container');
+        const pacContainer = document.querySelector('.pac-container') as HTMLElement | null;
         if (pacContainer) {
           ['touchstart', 'mousedown', 'click'].forEach(eventType => {
             pacContainer.removeEventListener(eventType, handleSelection);
@@ -143,7 +143,7 @@ const handleSubmit = async (event: Event) => {
     };
 
     const sightingsRef = collection(db, 'sightings');
-    const docRef = await addDoc(sightingsRef, sightingData);
+    await addDoc(sightingsRef, sightingData); 
 
     if (locationInput.value) {
       locationInput.value.value = '';

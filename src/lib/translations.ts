@@ -24,6 +24,9 @@ export const translations = {
       optional: "Optional",
       addAdditionalDetails: "Add Additional Details",
       submitReport: "Submit Report",
+      pleaseSelectLocation: "Please select a location",
+      sightingSubmitted: "Sighting submitted successfully",
+      errorSubmittingSighting: "Error submitting sighting",
     },
     es: {
       title: "Mapa de Actividad de ICE",
@@ -50,5 +53,8 @@ export const translations = {
       optional: "Opcional",
       addAdditionalDetails: "Agregar Detalles Adicionales",
       submitReport: "Reportar Avistamiento",
+      pleaseSelectLocation: "Por favor seleccione una ubicación",
+      sightingSubmitted: "Avistamiento reportado exitosamente",
+      errorSubmittingSighting: "Error al reportar avistamiento",
     }   
   };
