@@ -5,15 +5,6 @@
   import RadiusSearch from './components/RadiusSearch.vue';
   import SightingsList from './components/SightingsList.vue';
   import { Button } from './components/ui/button';
-  import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogTitle,
-    DialogTrigger,
-    DialogPortal,
-    DialogOverlay,
-  } from './components/ui/dialog';
   import type { Sighting } from './types/sighting';
   import { collection, query, onSnapshot } from 'firebase/firestore';
   import { db } from './lib/firebase';
@@ -33,7 +24,6 @@
     latitude: number;
     longitude: number;
   } | null>(null);
-  const dialog = ref(false);
 
   onMounted(() => {
     const q = query(collection(db, 'sightings'));
@@ -48,10 +38,19 @@
     });
   });
   const handleSightingSubmit = () => {
-    dialog.value = false;
+    closeModal();
   };
+
   const handleRadiusChange = (radiusData: typeof selectedRadius.value) => {
     selectedRadius.value = radiusData;
+  };
+
+  const isModalOpen = ref(false);
+  const openModal = () => {
+    isModalOpen.value = true;
+  };
+  const closeModal = () => {
+    isModalOpen.value = false;
   };
 </script>
 
@@ -77,32 +76,47 @@
           >
             {{ currentLanguage === 'en' ? 'Español' : 'English' }}
           </Button>
-          <Dialog v-model:open="dialog">
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 font-semibold px-4 sm:px-8"
+
+          <Button
+            @click="openModal"
+            size="lg"
+            class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 sm:px-8 py-2 rounded-md shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            {{ t('reportButton') }}
+          </Button>
+          <Teleport to="body">
+            <Transition name="fade">
+              <div
+                v-if="isModalOpen"
+                class="fixed inset-0 z-50 flex items-center justify-center"
               >
-                {{ t('reportButton') }}
-              </Button>
-            </DialogTrigger>
-            <DialogPortal>
-              <DialogOverlay
-                class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-              />
-              <DialogContent
-                class="fixed left-[50%] top-[50%] z-50 w-[calc(100%-2rem)] sm:w-full max-w-md translate-x-[-50%] translate-y-[-50%] rounded-xl bg-white p-6 sm:p-8 shadow-2xl"
-              >
-                <DialogTitle class="text-2xl font-bold text-gray-900 mb-2">
-                  {{ t('reportTitle') }}
-                </DialogTitle>
-                <DialogDescription class="text-gray-600 mb-6">
-                  {{ t('reportDescription') }}
-                </DialogDescription>
-                <SightingForm @submit="handleSightingSubmit" />
-              </DialogContent>
-            </DialogPortal>
-          </Dialog>
+                <div
+                  class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                  @click="closeModal"
+                ></div>
+                <div
+                  class="relative bg-white w-[calc(100%-2rem)] sm:w-full max-w-md rounded-xl p-6 sm:p-8 shadow-2xl"
+                  @click.stop
+                >
+                  <button
+                    @click="closeModal"
+                    class="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100"
+                  >
+                    <XIcon class="h-4 w-4" />
+                    <span class="sr-only">Close</span>
+                  </button>
+
+                  <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                    {{ t('reportTitle') }}
+                  </h2>
+                  <p class="text-gray-600 mb-6">
+                    {{ t('reportDescription') }}
+                  </p>
+                  <SightingForm @submit="handleSightingSubmit" />
+                </div>
+              </div>
+            </Transition>
+          </Teleport>
         </div>
       </div>
       <div class="space-y-6">

@@ -74,42 +74,43 @@
         );
 
         const handleSelection = async (event: Event) => {
-          event.preventDefault();
-          event.stopPropagation();
+          setTimeout(() => {
+            const target = event.target as HTMLElement;
+            const pacItem = target.closest('.pac-item');
 
-          const target = event.target as HTMLElement;
-          const pacItem = target.closest('.pac-item');
+            if (pacItem) {
+              const mainText =
+                pacItem.querySelector('.pac-item-query')?.textContent || '';
+              const secondaryText =
+                pacItem.querySelector('.pac-secondary-text')?.textContent || '';
+              const fullText = `${mainText} ${secondaryText}`.trim();
 
-          if (pacItem) {
-            const mainText =
-              pacItem.querySelector('.pac-item-query')?.textContent || '';
-            const secondaryText =
-              pacItem.querySelector('.pac-secondary-text')?.textContent || '';
-            const fullText = `${mainText} ${secondaryText}`.trim();
+              if (locationInput.value) {
+                locationInput.value.value = fullText;
+                locationInput.value.blur();
 
-            if (locationInput.value) {
-              locationInput.value.value = fullText;
-              locationInput.value.blur();
+                setTimeout(async () => {
+                  const service = new google.maps.places.AutocompleteService();
+                  const request = {
+                    input: fullText,
+                    componentRestrictions: { country: 'us' },
+                  };
 
-              const service = new google.maps.places.AutocompleteService();
-              const request = {
-                input: fullText,
-                componentRestrictions: { country: 'us' },
-              };
-
-              service.getPlacePredictions(
-                request,
-                async (predictions, status) => {
-                  if (
-                    status === google.maps.places.PlacesServiceStatus.OK &&
-                    predictions?.[0]
-                  ) {
-                    await handlePlaceSelection(predictions[0].place_id);
-                  }
-                }
-              );
+                  service.getPlacePredictions(
+                    request,
+                    async (predictions, status) => {
+                      if (
+                        status === google.maps.places.PlacesServiceStatus.OK &&
+                        predictions?.[0]
+                      ) {
+                        await handlePlaceSelection(predictions[0].place_id);
+                      }
+                    }
+                  );
+                }, 100);
+              }
             }
-          }
+          }, 10);
         };
 
         const observer = new MutationObserver(() => {
@@ -117,11 +118,11 @@
             '.pac-container'
           ) as HTMLElement | null;
           if (pacContainer) {
-            ['touchstart', 'mousedown', 'click'].forEach((eventType) => {
+            ['touchend', 'mousedown', 'click'].forEach((eventType) => {
               pacContainer.removeEventListener(eventType, handleSelection);
             });
 
-            ['touchstart', 'mousedown', 'click'].forEach((eventType) => {
+            ['touchend', 'mousedown', 'click'].forEach((eventType) => {
               pacContainer.addEventListener(eventType, handleSelection, {
                 capture: true,
                 passive: false,
@@ -145,7 +146,6 @@
               align-items: center !important;
             `;
             });
-
             observer.disconnect();
           }
         });
@@ -247,7 +247,7 @@
       </div>
       <Button
         type="submit"
-        class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
+        class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
         :disabled="!selectedLocation"
       >
         {{ t('submitReport') }}
@@ -258,18 +258,19 @@
 
 <style>
   .pac-container {
-    touch-action: manipulation !important;
+    touch-action: auto !important;
     z-index: 9999 !important;
     background-color: white !important;
     border-radius: 8px !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     margin-top: 4px !important;
     font-family: inherit !important;
+    position: absolute !important;
   }
 
   .pac-item {
-    min-height: 44px !important; 
-    padding: 12px 8px !important;
+    min-height: 48px !important; 
+    padding: 14px 12px !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
@@ -291,6 +292,8 @@
       width: calc(100% - 32px) !important;
       left: 16px !important;
       right: 16px !important;
+      max-height: 50vh !important; 
+      overflow-y: auto !important; 
     }
 
     .pac-item {

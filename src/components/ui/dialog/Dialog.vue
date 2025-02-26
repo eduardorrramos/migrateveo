@@ -8,18 +8,24 @@
   } from 'radix-vue';
   import { cn } from '@/lib/utils';
   import { XIcon } from 'lucide-vue-next';
-
   defineProps<{
     class?: string;
+    modal?: boolean;
   }>();
+  const emit = defineEmits(['overlayClick']);
+  const handleOverlayClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    emit('overlayClick', event);
+  };
 </script>
 
 <template>
-  <DialogRoot>
+  <DialogRoot :modal="modal ?? false">
     <slot name="trigger" />
     <DialogPortal>
       <DialogOverlay
         class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+        @pointerdown="handleOverlayClick"
       />
       <DialogContent
         :class="
